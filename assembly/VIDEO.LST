@@ -1,0 +1,56 @@
+     1                                  [ORG 0x100]
+     2 00000000 E95800                  jmp start
+     3 00000003 4655434B20594F55        stra:db'FUCK YOU'
+     4 0000000B 0800                    length:dw 8
+     5                                  clrscreen:
+     6 0000000D 50                      push ax
+     7 0000000E 57                      push di
+     8 0000000F 06                      push es
+     9 00000010 B800B8                  mov ax,0xb800
+    10 00000013 8EC0                    mov es,ax
+    11 00000015 BF0000                  mov di,0
+    12                                  looop:
+    13 00000018 26C7052014              mov word[es:di],0x1420
+    14 0000001D 81C70200                add di,2
+    15 00000021 81FFA00F                cmp di,4000
+    16 00000025 75F1                    jne looop
+    17 00000027 07                      pop es
+    18 00000028 5F                      pop di
+    19 00000029 58                      pop ax
+    20 0000002A C3                      ret
+    21                                  strprint:
+    22                                  ;call clrscreen
+    23 0000002B 55                      printstr: push bp
+    24 0000002C 89E5                    mov bp, sp
+    25 0000002E 06                      push es
+    26 0000002F 50                      push ax
+    27 00000030 51                      push cx
+    28 00000031 56                      push si
+    29 00000032 57                      push di
+    30 00000033 B800B8                  mov ax, 0xb800
+    31 00000036 8EC0                    mov es, ax ; point es to video base
+    32 00000038 BF3002                  mov di, 560 ; point di to top left column
+    33 0000003B 8B7604                  mov si, [bp+4] ; point si to string
+    34 0000003E 8B4E06                  mov cx, [bp+6] ; load length of string in cx
+    35 00000041 B407                    mov ah, 0x07 ; normal attribute fixed in al
+    36                                  nextchar: 
+    37 00000043 8A04                    mov al, [si] ; load next char of string
+    38 00000045 268905                  mov [es:di], ax ; show this char on screen
+    39 00000048 81C70200                add di, 2 ; move to next screen location
+    40 0000004C 81C60100                add si, 1 ; move to next char in string
+    41 00000050 E2F1                    loop nextchar ; repeat the operation cx times
+    42 00000052 5F                      pop di
+    43 00000053 5E                      pop si
+    44 00000054 59                      pop cx
+    45 00000055 58                      pop ax
+    46 00000056 07                      pop es
+    47 00000057 5D                      pop bp
+    48 00000058 C20400                  ret 4
+    49                                  start:
+    50 0000005B E8AFFF                  call clrscreen
+    51 0000005E FF36[0B00]              push word[length]
+    52 00000062 B8[0300]                mov ax,stra
+    53 00000065 50                      push ax
+    54 00000066 E8C2FF                  call strprint
+    55 00000069 B8004C                  mov ax,0x4c00
+    56 0000006C CD21                    int 0x21

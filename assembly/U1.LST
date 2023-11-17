@@ -1,0 +1,41 @@
+     1                                  [ORG 0x100]
+     2 00000000 E93E00                  jmp start
+     3                                  loop1:
+     4 00000003 55                      push bp
+     5 00000004 89E5                    mov bp,sp
+     6 00000006 50                      push ax
+     7 00000007 53                      push bx
+     8 00000008 51                      push cx
+     9 00000009 81EC0400                sub sp,4
+    10 0000000D 8B4604                  mov ax,[bp+4]
+    11 00000010 8946FE                  mov [bp-2],ax
+    12 00000013 8B4606                  mov ax,[bp+6]
+    13 00000016 8946FC                  mov [bp-4],ax
+    14 00000019 8B4608                  mov ax,[bp+8]
+    15 0000001C 2D0300                  sub ax,3
+    16 0000001F 89C1                    mov cx,ax
+    17                                  code1:
+    18 00000021 8B46FC                  mov ax,[bp-4]
+    19 00000024 8B5EFE                  mov bx,[bp-2]
+    20 00000027 895EFC                  mov [bp-4],bx
+    21 0000002A 0146FE                  add [bp-2],ax
+    22 0000002D 81E90100                sub cx,1
+    23 00000031 81F90000                cmp cx,0
+    24 00000035 75EA                    jne code1
+    25                                  ;loop code1
+    26 00000037 8B46FE                  mov ax,[bp-2]
+    27 0000003A 59                      pop cx
+    28 0000003B 5B                      pop bx
+    29 0000003C 58                      pop ax
+    30 0000003D 5D                      pop bp
+    31 0000003E C20600                  ret 6
+    32                                  start:
+    33 00000041 B80200                  mov ax,2
+    34 00000044 50                      push ax
+    35 00000045 B80100                  mov ax,1
+    36 00000048 50                      push ax
+    37 00000049 B80200                  mov ax,2
+    38 0000004C 50                      push ax
+    39 0000004D E8B3FF                  call loop1
+    40 00000050 B8004C                  mov ax,0x4c00
+    41 00000053 CD21                    int 0x21

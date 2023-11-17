@@ -1,0 +1,42 @@
+     1                                  ; scroll up the screen
+     2                                  [org 0x0100]
+     3 00000000 E93500                  jmp start
+     4                                  ; subroutine to scroll up the screen
+     5                                  ; take the number of lines to scroll as parameter
+     6 00000003 55                      scrollup: push bp
+     7 00000004 89E5                    mov bp,sp
+     8 00000006 50                      push ax
+     9 00000007 51                      push cx
+    10 00000008 56                      push si
+    11 00000009 57                      push di
+    12 0000000A 06                      push es
+    13 0000000B 1E                      push ds
+    14 0000000C B85000                  mov ax, 80 ; load chars per row in ax
+    15 0000000F F66604                  mul byte [bp+4] ; calculate source position
+    16 00000012 89C6                    mov si, ax ; load source position in si
+    17 00000014 56                      push si ; save position for later use
+    18 00000015 D1E6                    shl si, 1 ; convert to byte offset
+    19 00000017 B9D007                  mov cx, 2000 ; number of screen locations
+    20 0000001A 29C1                    sub cx, ax ; count of words to move
+    21 0000001C B800B8                  mov ax, 0xb800
+    22 0000001F 8EC0                    mov es, ax ; point es to video base
+    23 00000021 8ED8                    mov ds, ax ; point ds to video base
+    24 00000023 31FF                    xor di, di ; point di to top left column
+    25 00000025 FC                      cld ; set auto increment mode
+    26 00000026 F3A5                    rep movsw ; scroll up
+    27 00000028 B82007                  mov ax, 0x0720 ; space in normal attribute
+    28 0000002B 59                      pop cx ; count of positions to clear
+    29 0000002C F3AB                    rep stosw ; clear the scrolled space
+    30 0000002E 1F                      pop ds
+    31 0000002F 07                      pop es
+    32 00000030 5F                      pop di
+    33 00000031 5E                      pop si
+    34 00000032 59                      pop cx
+    35 00000033 58                      pop ax
+    36 00000034 5D                      pop bp
+    37 00000035 C20200                  ret 2
+    38 00000038 B80500                  start: mov ax,5
+    39 0000003B 50                      push ax ; push number of lines to scroll
+    40 0000003C E8C4FF                  call scrollup ; call the scroll up subroutine
+    41 0000003F B8004C                  mov ax, 0x4c00 ; terminate program
+    42 00000042 CD21                    int 0x21

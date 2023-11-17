@@ -1,0 +1,31 @@
+     1                                  [ORG 0x100]
+     2 00000000 E91100                  jmp start
+     3                                  swap1:
+     4 00000003 8B87[3F00]              mov ax,[data+bx]
+     5 00000007 8787[4100]              xchg ax,[data+bx+2]
+     6 0000000B 8987[3F00]              mov [data+bx],ax
+     7 0000000F C606[4500]01            mov byte[swap],1
+     8                                  start:
+     9 00000014 BB0000                  mov bx,0
+    10 00000017 C606[4500]00            mov byte[swap],0
+    11                                  
+    12                                  beg:
+    13 0000001C 8B87[3F00]              mov ax,[data+bx]
+    14 00000020 3B87[4100]              cmp ax,[data+bx+2]
+    15 00000024 7F03                    jg noswap
+    16                                  
+    17 00000026 E8DAFF                  call swap1
+    18                                  
+    19                                  noswap:
+    20 00000029 81C30200                add bx,2
+    21 0000002D 81FB1200                cmp bx,18
+    22 00000031 75E9                    jne beg
+    23                                  
+    24 00000033 803E[4500]00            cmp byte[swap],0
+    25 00000038 75DA                    jne start
+    26                                  
+    27 0000003A B8004C                  mov ax,0x4c00
+    28 0000003D CD21                    int 0x21
+    29                                  
+    30 0000003F FDFF02000300            data:dw -3,2,3
+    31 00000045 00                      swap:db 0

@@ -1,0 +1,57 @@
+     1                                  [org 0x100]
+     2 00000000 E98200                  jmp start
+     3 00000003 3C0037002D00320028-     data: dw 60, 55, 45, 50, 40, 35, 25, 30, 10, 0
+     4 0000000C 00230019001E000A00-
+     5 00000015 0000               
+     6 00000017 480149018203DB2265-     data2: dw 328, 329, 898, 8923, 8293, 2345, 10, 877, 355, 98,888, 533, 2000, 1020, 30, 200, 761, 167, 90, 5
+     7 00000020 2029090A006D036301-
+     8 00000029 620078031502D007FC-
+     9 00000032 031E00C800F902A700-
+    10 0000003B 5A000500           
+    11                                  bubblesort:
+    12 0000003F 55                      push bp ; save old value of bp
+    13 00000040 89E5                    mov bp, sp ; make bp our reference point
+    14 00000042 81EC0200                sub sp, 2 ; make two byte space on stack
+    15 00000046 50                      push ax ; save old value of ax
+    16 00000047 53                      push bx ; save old value of bx
+    17 00000048 51                      push cx ; save old value of cx
+    18 00000049 56                      push si ; save old value of si
+    19 0000004A 8B5E06                  mov bx, [bp+6] ; load start of array in bx
+    20 0000004D 8B4E04                  mov cx, [bp+4] ; load count of elements in cx
+    21 00000050 49                      dec cx ; last element not compared
+    22 00000051 D1E1                    shl cx, 1 ; turn into byte count
+    23                                  mainloop:
+    24 00000053 BE0000                  mov si, 0 ; initialize array index to zero
+    25 00000056 C746FE0000              mov word [bp-2], 0 ; reset swap flag to no swaps
+    26                                  innerloop:
+    27 0000005B 8B00                    mov ax, [bx+si] ; load number in ax
+    28 0000005D 3B4002                  cmp ax, [bx+si+2] ; compare with next number
+    29 00000060 760A                    jbe noswap ; no swap if already in order
+    30 00000062 874002                  xchg ax, [bx+si+2] ; exchange ax with second number
+    31 00000065 8900                    mov [bx+si], ax ; store second number in first
+    32 00000067 C746FE0100              mov word [bp-2], 1 ; flag that a swap has been done
+    33 0000006C 81C60200                noswap: add si, 2 ; advance si to next index
+    34 00000070 39CE                    cmp si, cx ; are we at last index
+    35 00000072 75E7                    jne innerloop ; if not compare next two
+    36 00000074 817EFE0100              cmp word [bp-2], 1 ; check if a swap has been done
+    37 00000079 74D8                    je mainloop ; if yes make another pass
+    38 0000007B 5E                      pop si ; restore old value of si
+    39 0000007C 59                      pop cx ; restore old value of cx
+    40 0000007D 5B                      pop bx ; restore old value of bx
+    41 0000007E 58                      pop ax ; restore old value of ax
+    42 0000007F 89EC                    mov sp, bp ; remove space created on stack
+    43 00000081 5D                      pop bp ; restore old value of bp
+    44 00000082 C20400                  ret 4 ; go back and remove two params
+    45                                  start:
+    46 00000085 B8[0300]                mov ax, data
+    47 00000088 50                      push ax ; place start of array on stack
+    48 00000089 B80A00                  mov ax, 10
+    49 0000008C 50                      push ax ; place element count on stack
+    50 0000008D E8AFFF                  call bubblesort ; call our subroutine
+    51 00000090 B8[1700]                mov ax, data2
+    52 00000093 50                      push ax ; place start of array on stack
+    53 00000094 B81400                  mov ax, 20
+    54 00000097 50                      push ax ; place element count on stack
+    55 00000098 E8A4FF                  call bubblesort ; call our subroutine again
+    56 0000009B B8004C                  mov ax, 0x4c00 ; terminate program
+    57 0000009E CD21                    int 0x21

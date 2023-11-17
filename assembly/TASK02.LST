@@ -1,0 +1,87 @@
+     1                                  [ORG 0x100]
+     2 00000000 E98500                  jmp start
+     3 00000003 68656C6C6F20202020-     message1:db 'hello            '
+     4 0000000C 2020202020202020   
+     5 00000014 4D6F74686572667563-     message2:db 'Motherfucker'
+     6 0000001D 6B6572             
+     7 00000020 0500                    length1:dw 5
+     8 00000022 0C00                    length2:dw 12
+     9 00000024 0000                    length3:dw 0
+    10                                  clrscreen:
+    11 00000026 06                      push es
+    12 00000027 50                      push ax
+    13 00000028 57                      push di
+    14 00000029 B800B8                  mov ax,0xb800
+    15 0000002C 8EC0                    mov es,ax
+    16 0000002E BF0000                  mov di,0
+    17 00000031 B82004                  mov ax,0x0420
+    18                                  loop1:
+    19 00000034 268905                  mov word[es:di],ax
+    20 00000037 81C70200                add di,2
+    21 0000003B 81FFA00F                cmp di,4000
+    22 0000003F 75F3                    jne loop1
+    23 00000041 5F                      pop di
+    24 00000042 58                      pop ax
+    25 00000043 07                      pop es
+    26 00000044 C3                      ret
+    27                                  concatenate:
+    28 00000045 06                      push es
+    29 00000046 50                      push ax
+    30 00000047 57                      push di
+    31 00000048 56                      push si
+    32 00000049 51                      push cx
+    33 0000004A B800B8                  mov ax,0xb800
+    34 0000004D 8EC0                    mov es,ax
+    35 0000004F 8B36[0300]              mov si,[message1]
+    36 00000053 BF0000                  mov di,0
+    37 00000056 B404                    mov ah,0x04
+    38 00000058 B90000                  mov cx,0
+    39                                  loop12:
+    40 0000005B 8A04                    mov al,[si]
+    41 0000005D 268905                  mov word[es:di],ax
+    42 00000060 81C60100                add si,1
+    43 00000064 81C70200                add di,2
+    44 00000068 81C10100                add cx,1
+    45 0000006C 81F9C800                cmp cx,200
+    46 00000070 75E9                    jne loop12
+    47 00000072 59                      pop cx
+    48 00000073 5E                      pop si
+    49 00000074 5F                      pop di
+    50 00000075 58                      pop ax
+    51 00000076 07                      pop es
+    52 00000077 C3                      ret
+    53                                  sum:
+    54 00000078 55                      push bp
+    55 00000079 89E5                    mov bp,sp
+    56 0000007B 50                      push ax
+    57 0000007C 8B4604                  mov ax,[bp+4]
+    58 0000007F 034608                  add ax,[bp+8]
+    59 00000082 A3[2400]                mov word[length3],ax
+    60 00000085 58                      pop ax
+    61 00000086 5D                      pop bp
+    62 00000087 C3                      ret
+    63                                  start:
+    64 00000088 E89BFF                  call clrscreen
+    65 0000008B 8B1E[2000]              mov bx,[length1]
+    66 0000008F 031E[2200]              add bx,[length2]
+    67 00000093 B90000                  mov cx,0
+    68 00000096 8B36[0300]              mov si,[message1]
+    69                                  loopxy:
+    70 0000009A 46                      inc si
+    71 0000009B 41                      inc cx
+    72 0000009C 3B36[2000]              cmp si,[length1]
+    73 000000A0 75F8                    jne loopxy
+    74 000000A2 8B36[1400]              mov si,[message2]
+    75 000000A6 89CF                    mov di,cx
+    76                                  loopy:
+    77 000000A8 8B04                    mov ax,[si]
+    78 000000AA 8985[0300]              mov word[message1+di],ax
+    79 000000AE 46                      inc si
+    80 000000AF 41                      inc cx
+    81 000000B0 39DE                    cmp si,bx
+    82 000000B2 75F4                    jne loopy
+    83 000000B4 53                      push bx
+    84 000000B5 E88DFF                  call concatenate
+    85                                  ;call clrscreen
+    86 000000B8 B8004C                  mov ax,0x4c00
+    87 000000BB CD21                    int 0x21

@@ -1,0 +1,60 @@
+     1                                  [ORG 0x100]
+     2 00000000 E95700                  jmp start
+     3 00000003 0C00                    length:dw 12 
+     4 00000005 4655434B20594F5521-     string1:db'FUCK YOU!!!!'
+     5 0000000E 212121             
+     6                                  clrscreen:
+     7 00000011 06                      push es
+     8 00000012 50                      push ax
+     9 00000013 57                      push di
+    10 00000014 B800B8                  mov ax,0xb800
+    11 00000017 8EC0                    mov es,ax 
+    12 00000019 31FF                    xor di,di
+    13 0000001B B82007                  mov ax,0x0720
+    14                                  loop12:
+    15 0000001E 268905                  mov word[es:di],ax
+    16 00000021 81C70200                add di,2 
+    17 00000025 81FFA00F                cmp di,4000
+    18 00000029 75F3                    jnz loop12
+    19 0000002B 5F                      pop di
+    20 0000002C 58                      pop ax
+    21 0000002D 07                      pop es
+    22 0000002E C3                      ret
+    23                                  print:
+    24 0000002F 55                      push bp
+    25 00000030 89E5                    mov bp,sp
+    26 00000032 06                      push es
+    27 00000033 50                      push ax
+    28 00000034 57                      push di
+    29 00000035 51                      push cx
+    30 00000036 56                      push si
+    31 00000037 B800B8                  mov ax,0xb800
+    32 0000003A 8EC0                    mov es,ax
+    33 0000003C BFDC05                  mov di,1500
+    34 0000003F 8B7606                  mov si,[bp+6]
+    35 00000042 8B4E04                  mov cx,[bp+4]
+    36 00000045 B421                    mov ah,0x21
+    37                                  loop1:
+    38 00000047 8A04                    mov al,[si]
+    39 00000049 268905                  mov word[es:di],ax
+    40 0000004C 81C70200                add di,2
+    41 00000050 46                      inc si
+    42 00000051 E2F4                    loop loop1
+    43 00000053 5E                      pop si
+    44 00000054 59                      pop cx
+    45 00000055 5F                      pop di
+    46 00000056 58                      pop ax
+    47 00000057 07                      pop es
+    48 00000058 5D                      pop bp
+    49 00000059 C3                      ret
+    50                                  start:
+    51 0000005A E8B4FF                  call clrscreen
+    52 0000005D B8[0500]                mov ax,string1
+    53 00000060 50                      push ax
+    54 00000061 FF36[0300]              push word[length]
+    55 00000065 E8C7FF                  call print
+    56                                  ;mov ah,0x1
+    57                                  ;int 0x21
+    58                                  ;call print
+    59 00000068 B8004C                  mov ax,0x4c00
+    60 0000006B CD21                    int 0x21

@@ -1,0 +1,27 @@
+     1                                  [ORG 0x100]
+     2 00000000 E92300                  jmp start
+     3                                  clrscreen:
+     4 00000003 55                      push bp
+     5 00000004 89E5                    mov bp,sp
+     6 00000006 50                      push ax
+     7 00000007 06                      push es
+     8 00000008 53                      push bx
+     9 00000009 57                      push di
+    10 0000000A B800B8                  mov ax,0xb800
+    11 0000000D 8EC0                    mov es,ax
+    12 0000000F B82007                  mov ax,0x0720
+    13 00000012 BF0000                  mov di,0
+    14 00000015 B9D007                  mov cx,2000
+    15                                  looop:
+    16 00000018 268905                  mov word[es:di],ax
+    17 0000001B 81C70200                add di,2
+    18 0000001F E2F7                    loop looop
+    19 00000021 5F                      pop di
+    20 00000022 5B                      pop bx
+    21 00000023 07                      pop es
+    22 00000024 58                      pop ax
+    23 00000025 C3                      ret
+    24                                  start:
+    25 00000026 E8DAFF                  call clrscreen
+    26 00000029 B8004C                  mov ax,0x4c00
+    27 0000002C CD21                    int 0x21

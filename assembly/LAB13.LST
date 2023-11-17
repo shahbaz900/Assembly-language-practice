@@ -1,0 +1,65 @@
+     1                                  [ORG 0x100]
+     2 00000000 E97600                  jmp start
+     3 00000003 772070726573656E74      stringw:db 'w present'
+     4 0000000C 0A                      lengthw:db 10
+     5 0000000D 612070726573656E74      stringa:db 'a present'
+     6 00000016 0A                      lengtha:db 10
+     7 00000017 732070726573656E74      strings:db 's present'
+     8 00000020 0A                      lengths:db 10
+     9 00000021 642070726573656E74      stringd:db 'd present'
+    10 0000002A 0A                      lengthd:db  10
+    11                                  clrscreen:
+    12 0000002B 06                      push es
+    13 0000002C 50                      push ax
+    14 0000002D 51                      push cx
+    15 0000002E 57                      push di
+    16 0000002F B800B8                  mov ax, 0xb800
+    17 00000032 8EC0                    mov es, ax
+    18 00000034 31FF                    xor di,di
+    19 00000036 B9D007                  mov cx,2000
+    20 00000039 B82007                  mov ax,0x0720
+    21 0000003C FC                      cld 
+    22 0000003D F3AB                    rep stosw
+    23 0000003F 5F                      pop di
+    24 00000040 59                      pop cx
+    25 00000041 58                      pop ax
+    26 00000042 07                      pop es
+    27 00000043 C3                      ret
+    28                                  checkalpha:
+    29 00000044 50                      push ax
+    30 00000045 06                      push es
+    31 00000046 53                      push bx
+    32 00000047 51                      push cx
+    33 00000048 52                      push dx
+    34 00000049 E8DFFF                  call clrscreen
+    35 0000004C B400                    mov ah,0
+    36 0000004E CD16                    int 0x16
+    37                                  ;in al, 0x60;-->command for reading the key pressed
+    38 00000050 3C77                    cmp al,0x77
+    39 00000052 B607                    mov dh , 0x07
+    40 00000054 88C2                    mov dl,al
+    41 00000056 740E                    je print
+    42 00000058 3C73                    cmp al,0x73
+    43 0000005A 740A                    je print
+    44 0000005C 3C61                    cmp al,0x61
+    45 0000005E 7406                    je print
+    46 00000060 3C64                    cmp al,0x64
+    47 00000062 7402                    je print
+    48 00000064 750D                    jne end
+    49                                  print:
+    50 00000066 B800B8                  mov ax, 0xb800
+    51 00000069 8EC0                    mov es, ax
+    52 0000006B 268816F807              mov byte[es:2040],dl
+    53 00000070 E90000                  jmp end
+    54                                  end:
+    55 00000073 5A                      pop dx
+    56 00000074 59                      pop cx
+    57 00000075 5B                      pop bx
+    58 00000076 07                      pop es
+    59 00000077 58                      pop ax
+    60 00000078 C3                      ret
+    61                                  start:
+    62                                  
+    63 00000079 E8C8FF                  call checkalpha
+    64 0000007C B8004C                  mov ax,0x4c00
+    65 0000007F CD21                    int 0x21

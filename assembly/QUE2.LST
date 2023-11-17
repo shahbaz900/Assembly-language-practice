@@ -1,0 +1,58 @@
+     1                                  [org 0x0100]
+     2 00000000 E97D00                  jmp start
+     3 00000003 3C0037002D00320028-     data: dw 60,55,45,50,40,35,25,30,10,0
+     4 0000000C 00230019001E000A00-
+     5 00000015 0000               
+     6 00000017 480149018203DB2265-     data2: dw 328,329,898,8923,8293,2345,10,877,355, 98,888,533,2000,1020,30,200,761,167,90,5
+     7 00000020 2029090A006D036301-
+     8 00000029 620078031502D007FC-
+     9 00000032 031E00C800F902A700-
+    10 0000003B 5A000500           
+    11 0000003F 00                      swapflag: db 0
+    12                                  bubblesort: 
+    13 00000040 55                      push bp 
+    14 00000041 89E5                    mov bp, sp 
+    15 00000043 50                      push ax 
+    16 00000044 53                      push bx 
+    17 00000045 51                      push cx 
+    18 00000046 56                      push si 
+    19 00000047 8B5E06                  mov bx, [bp+6] 
+    20 0000004A 8B4E04                  mov cx, [bp+4] 
+    21 0000004D 49                      dec cx 
+    22 0000004E D1E1                    shl cx, 1 
+    23                                  mainloop: 
+    24 00000050 BE0000                  mov si, 0 
+    25 00000053 C606[3F00]00            mov byte [swapflag], 0 
+    26                                  innerloop:
+    27 00000058 8B00                    mov ax, [bx+si] 
+    28 0000005A 3B4002                  cmp ax, [bx+si+2] 
+    29 0000005D 760A                    jbe noswap
+    30 0000005F 874002                  xchg ax, [bx+si+2]
+    31 00000062 8900                    mov [bx+si], ax  
+    32 00000064 C606[3F00]01            mov byte [swapflag], 1 
+    33                                  noswap:
+    34 00000069 81C60200                add si, 2
+    35 0000006D 39CE                    cmp si, cx 
+    36 0000006F 75E7                    jne innerloop 
+    37 00000071 803E[3F00]01            cmp byte [swapflag], 1 
+    38 00000076 74D8                    je mainloop 
+    39 00000078 5E                      pop si 
+    40 00000079 59                      pop cx 
+    41 0000007A 5B                      pop bx 
+    42 0000007B 58                      pop ax 
+    43 0000007C 5D                      pop bp 
+    44 0000007D C20400                  ret 4 
+    45                                  
+    46                                  start:
+    47 00000080 B8[0300]                mov ax, data
+    48 00000083 50                      push ax ; place start of array on stack
+    49 00000084 B80A00                  mov ax, 10
+    50 00000087 50                      push ax ; place element count on stack
+    51 00000088 E8B5FF                  call bubblesort ; call our subroutine
+    52 0000008B B8[1700]                mov ax, data2
+    53 0000008E 50                      push ax ; place start of array on stack
+    54 0000008F B81400                  mov ax, 20
+    55 00000092 50                      push ax ; place element count on stack
+    56 00000093 E8AAFF                  call bubblesort ; call our subroutine again
+    57 00000096 B8004C                  mov ax, 0x4c00 ; terminate program
+    58 00000099 CD21                    int 0x21

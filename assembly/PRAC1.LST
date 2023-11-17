@@ -1,0 +1,63 @@
+     1                                  [ORG 0x100]
+     2 00000000 E95300                  jmp start
+     3                                  clrscreen:
+     4 00000003 55                      push bp
+     5 00000004 89E5                    mov bp,sp
+     6 00000006 50                      push ax
+     7 00000007 06                      push es
+     8 00000008 53                      push bx
+     9 00000009 57                      push di
+    10 0000000A B800B8                  mov ax,0xb800
+    11 0000000D 8EC0                    mov es,ax
+    12 0000000F B82007                  mov ax,0x0720
+    13 00000012 BF0000                  mov di,0
+    14 00000015 B9D007                  mov cx,2000
+    15                                  looop:
+    16 00000018 268905                  mov word[es:di],ax
+    17 0000001B 81C70200                add di,2
+    18 0000001F E2F7                    loop looop
+    19 00000021 5F                      pop di
+    20 00000022 5B                      pop bx
+    21 00000023 07                      pop es
+    22 00000024 58                      pop ax
+    23 00000025 5D                      pop bp
+    24 00000026 C3                      ret
+    25                                  printsnake:
+    26 00000027 55                      push bp
+    27 00000028 89E5                    mov bp,sp
+    28 0000002A 50                      push ax
+    29 0000002B 06                      push es
+    30 0000002C 53                      push bx
+    31 0000002D 57                      push di
+    32 0000002E B800B8                  mov ax,0xb800
+    33 00000031 8EC0                    mov es,ax
+    34 00000033 B050                    mov al,80
+    35 00000035 F66606                  mul byte[bp+6]
+    36 00000038 034604                  add ax,[bp+4]
+    37 0000003B D1E0                    shl ax,1
+    38 0000003D 89C7                    mov di,ax
+    39 0000003F B82A07                  mov ax,0x072A
+    40 00000042 8B4E08                  mov cx,[bp+8]
+    41                                  looop1:
+    42 00000045 268905                  mov word[es:di],ax
+    43 00000048 81C7A000                add di,160
+    44 0000004C E2F7                    loop looop1
+    45 0000004E 5F                      pop di
+    46 0000004F 5B                      pop bx
+    47 00000050 07                      pop es
+    48 00000051 58                      pop ax
+    49 00000052 5D                      pop bp
+    50 00000053 C20600                  ret 6
+    51                                  
+    52                                  start:
+    53 00000056 E8AAFF                  call clrscreen
+    54 00000059 B80A00                  mov ax,10;length
+    55 0000005C 50                      push ax
+    56 0000005D B80A00                  mov ax,10;y length
+    57 00000060 50                      push ax
+    58 00000061 B80B00                  mov ax,11;x length
+    59 00000064 50                      push ax
+    60 00000065 E8BFFF                  call printsnake
+    61                                  ;call printtriangle
+    62 00000068 B8004C                  mov ax,0x4c00
+    63 0000006B CD21                    int 0x21

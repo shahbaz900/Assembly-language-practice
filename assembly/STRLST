@@ -1,0 +1,126 @@
+     1                                  [ORG 0x100]
+     2 00000000 E9C100                  jmp start
+     3 00000003 4655434B20594F5520-     stringa:db'FUCK YOU MOTHERFUCKER',0
+     4 0000000C 4D4F54484552465543-
+     5 00000015 4B455200           
+     6 00000019 0000                    count:dw 0
+     7                                  clrscreen:
+     8 0000001B 06                      push es
+     9 0000001C 57                      push di
+    10 0000001D 51                      push cx
+    11 0000001E 50                      push ax
+    12 0000001F B800B8                  mov ax,0xb800
+    13 00000022 8EC0                    mov es,ax
+    14 00000024 B9A00F                  mov cx,4000
+    15 00000027 B82007                  mov ax,0x0720
+    16 0000002A 31FF                    xor di,di
+    17 0000002C FC                      cld
+    18 0000002D F3AB                    rep stosw
+    19 0000002F 58                      pop ax
+    20 00000030 59                      pop cx
+    21 00000031 5F                      pop di
+    22 00000032 07                      pop es
+    23 00000033 C3                      ret
+    24                                  strlength:
+    25 00000034 55                      push bp
+    26 00000035 89E5                    mov bp,sp
+    27 00000037 06                      push es 
+    28 00000038 57                      push di
+    29 00000039 51                      push cx
+    30 0000003A B9FFFF                  mov cx,0xffff
+    31 0000003D C47E04                  les di,[bp+4]
+    32 00000040 30C0                    xor al,al
+    33 00000042 F2AE                    repne scasb
+    34 00000044 B8FFFF                  mov ax,0xffff
+    35 00000047 29C8                    sub ax,cx
+    36 00000049 48                      dec ax
+    37 0000004A 59                      pop cx
+    38 0000004B 5F                      pop di
+    39 0000004C 07                      pop es
+    40 0000004D 5D                      pop bp
+    41 0000004E C3                      ret
+    42                                  printstr:
+    43 0000004F 55                      push bp
+    44 00000050 89E5                    mov bp,sp
+    45 00000052 06                      push es
+    46 00000053 57                      push di
+    47 00000054 51                      push cx
+    48 00000055 56                      push si
+    49 00000056 89C1                    mov cx,ax
+    50 00000058 B800B8                  mov ax,0xb800
+    51 0000005B 8EC0                    mov es,ax
+    52 0000005D BF3002                  mov di,560
+    53 00000060 B409                    mov ah,0x09 
+    54 00000062 8B7604                  mov si,[bp+4]
+    55                                  loop1:
+    56 00000065 AC                      lodsb
+    57 00000066 AB                      stosw
+    58 00000067 E2FC                    loop loop1
+    59 00000069 5E                      pop si
+    60 0000006A 59                      pop cx
+    61 0000006B 5F                      pop di
+    62 0000006C 07                      pop es 
+    63 0000006D 5D                      pop bp
+    64 0000006E C3                      ret
+    65                                  scrolldown:
+    66 0000006F 55                      push bp
+    67 00000070 89E5                    mov bp,sp
+    68 00000072 50                      push ax
+    69 00000073 53                      push bx
+    70 00000074 51                      push cx
+    71 00000075 06                      push es
+    72 00000076 1E                      push ds
+    73 00000077 57                      push di
+    74 00000078 56                      push si
+    75 00000079 B85000                  mov ax,80
+    76 0000007C F66604                  mul byte[bp+4]
+    77 0000007F 89C6                    mov si,ax
+    78 00000081 56                      push si
+    79 00000082 D1E6                    shl si,1
+    80 00000084 BE9E0F                  mov si,3998
+    81 00000087 29C6                    sub si,ax
+    82 00000089 B9D007                  mov cx,2000
+    83 0000008C 29C1                    sub cx,ax
+    84 0000008E B800B8                  mov ax,0xb800
+    85 00000091 8EC0                    mov es,ax
+    86 00000093 8ED8                    mov ds,ax
+    87 00000095 BF9E0F                  mov di,3998
+    88 00000098 FD                      std
+    89 00000099 F3A5                    rep movsw
+    90 0000009B B80203                  mov ax,0x0302
+    91 0000009E 59                      pop cx
+    92 0000009F F3AB                    rep stosw
+    93 000000A1 5E                      pop si
+    94 000000A2 5F                      pop di
+    95 000000A3 1F                      pop ds
+    96 000000A4 07                      pop es
+    97                                  popcx
+    98 000000A5 5B                      pop bx
+    99 000000A6 58                      pop ax
+   100 000000A7 5D                      pop bp
+   101 000000A8 C3                      ret
+   102                                  delay:
+   103 000000A9 66C706[1900]80F0FA-     mov dword[count],50000000
+   104 000000B1 02                 
+   105                                  l1:
+   106 000000B2 66FF0E[1900]            dec dword[count]
+   107 000000B7 66813E[1900]000000-     cmp dword[count],0
+   108 000000BF 00                 
+   109 000000C0 75F0                    jne l1
+   110 000000C2 58                      pop ax
+   111 000000C3 C3                      ret
+   112                                  start:
+   113 000000C4 E854FF                  call clrscreen
+   114 000000C7 1E                      push ds
+   115 000000C8 B8[0300]                mov ax,stringa
+   116 000000CB 50                      push ax
+   117 000000CC E865FF                  call strlength
+   118 000000CF E87DFF                  call printstr
+   119                                  loop12:
+   120 000000D2 E8D4FF                  call delay
+   121 000000D5 B80200                  mov ax,2
+   122 000000D8 50                      push ax
+   123 000000D9 E893FF                  call scrolldown
+   124 000000DC E2F4                    loop loop12
+   125 000000DE B8004C                  mov ax,0x4c00
+   126 000000E1 CD21                    int 0x21

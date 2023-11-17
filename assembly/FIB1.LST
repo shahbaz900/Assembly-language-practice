@@ -1,0 +1,34 @@
+     1                                  [ORG 0x100]
+     2                                  
+     3 00000000 E92D00                  jmp start
+     4                                  
+     5 00000003 000001000100020003-     data:dw 0,1,1,2,3,5
+     6 0000000C 000500             
+     7 0000000F 0000                    sum:dw 0
+     8                                  
+     9                                  fibonacci:
+    10 00000011 51                      push cx
+    11 00000012 53                      push bx
+    12 00000013 56                      push si
+    13 00000014 49                      dec cx
+    14 00000015 D1E1                    shl cx,1
+    15 00000017 BE0000                  mov si,0
+    16                                  mainwork:
+    17 0000001A 0300                    add ax,[bx+si]
+    18 0000001C 89C2                    mov dx,ax
+    19                                  ;add ax,dx
+    20 0000001E 81C60200                add si,2
+    21 00000022 81E90200                sub cx,2
+    22 00000026 81F90000                cmp cx,0
+    23 0000002A 75EE                    jnz mainwork
+    24 0000002C 5E                      pop si
+    25 0000002D 5B                      pop bx
+    26 0000002E 5E                      pop si
+    27 0000002F C3                      ret
+    28                                  start:
+    29 00000030 BB[0300]                mov bx,data
+    30 00000033 B90700                  mov cx,7
+    31 00000036 E8D8FF                  call fibonacci
+    32 00000039 B8004C                  mov ax,0x4c00
+    33 0000003C CD21                    int 0x21
+    34                                  

@@ -1,0 +1,86 @@
+     1                                  [org 0x0100]
+     2                                  
+     3 00000000 B80200                  start:			mov ax, 2
+     4                                  			
+     5 00000003 81EC0200                				sub sp,2
+     6 00000007 50                      				push ax
+     7                                  
+     8 00000008 E80600                  				call fibonacci
+     9                                  
+    10 0000000B 58                      				pop ax
+    11                                  
+    12 0000000C B8004C                  end:			mov ax, 0x4c00
+    13 0000000F CD21                    				int 21h
+    14                                  
+    15                                  
+    16                                  
+    17 00000011 55                      fibonacci:		push bp
+    18 00000012 89E5                    				mov bp,sp
+    19                                  
+    20 00000014 81EC0200                				sub sp,2
+    21                                  
+    22 00000018 60                      				pusha
+    23                                  
+    24 00000019 8B4604                  				mov ax, [bp + 4]
+    25                                  
+    26 0000001C 3D0100                  basecase1:		cmp ax,1
+    27 0000001F 7508                    				jnz basecase2
+    28 00000021 C746060100              				mov word [bp + 6],1
+    29 00000026 E92900                  				jmp return
+    30                                  
+    31                                  
+    32 00000029 3D0000                  basecase2:		cmp ax,0
+    33 0000002C 7508                    				jnz calls				
+    34 0000002E C746060000              				mov word [bp + 6],0
+    35 00000033 E91C00                  				jmp return
+    36                                  
+    37                                  
+    38 00000036 81EC0200                calls:			sub sp,2
+    39 0000003A 48                      				dec ax
+    40 0000003B 50                      				push ax 
+    41                                  
+    42 0000003C E8D2FF                  call1:			call fibonacci
+    43                                  
+    44 0000003F 8F46FE                  				pop word [bp - 2]             ;A local variable used to store the return value from the first 
+    45                                  											  ;recursive call
+    46                                  
+    47 00000042 81EC0200                				sub sp,2
+    48 00000046 48                      				dec ax
+    49 00000047 50                      				push ax
+    50                                  
+    51 00000048 E8C6FF                  call2:			call fibonacci
+    52 0000004B 5A                      				pop dx
+    53                                  
+    54 0000004C 0356FE                  				add dx, [bp - 2]
+    55 0000004F 895606                  				mov [bp + 6],dx
+    56                                  
+    57 00000052 61                      return:			popa
+    58 00000053 81C40200                				add sp,2
+    59 00000057 5D                      				pop bp
+    60 00000058 C20200                  				ret 2				
+    61                                  
+    62                                  
+    63                                  ;--------------------------------------------------------
+    64                                  ;Logic Explained
+    65                                  
+    66                                  ;Carefully read this function
+    67                                  
+    68                                  
+    69                                  ;	int fibonacci (int n)
+    70                                  ;	{	
+    71                                  ;			int x;				;The local variable made to store the result from first recursive call
+    72                                  ;
+    73                                  ;			if( n == 1 )
+    74                                  ;			   return 1;
+    75                                  ;
+    76                                  ;			if( n == 0 )
+    77                                  ;			  return 0;
+    78                                  ;
+    79                                  ;		
+    80                                  ;			x = fibonacci (n - 1);
+    81                                  ;			x = x + fibonacci (n - 2);
+    82                                  ;			
+    83                                  ;			return x;
+    84                                  ;	}
+    85                                  
+    86                                  ;-------------------------------------------------------
